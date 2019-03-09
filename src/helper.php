@@ -32,19 +32,6 @@ if (!is_dir($addons_path)) {
 // 注册类的根命名空间
 Loader::addNamespace('addons', $addons_path);
 // 闭包自动识别插件目录配置
-//Hook::add('app_init', function () {
-//
-//    if (empty($config)) {
-//        // 读取插件钩子列表
-//        $hooks = Db::name('Hooks')->field('name,addons')->select();
-//        foreach ($hooks as $hook) {
-//            $config['hooks'][$hook['name']] = explode(',', $hook['addons']);
-//        }
-//        cache('addons', $config);
-//    }
-//    config('addons', $config);
-//});
-
 Hook::add('app_init', function () {
     // 获取开关
     $autoload = (bool)Config::get('addons.addons.autoload', false);
