@@ -1,13 +1,15 @@
 <?php
+
 // +----------------------------------------------------------------------
-// | thinkphp5 Addons [ WE CAN DO IT JUST THINK IT ]
+// | cuicmf addons插件
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016 http://www.zzstudio.net All rights reserved.
+// | Copyright (c) 2018-2019F All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Byron Sampson <xiaobo.sun@qq.com>
+// | Author: 崔元欣 <15811506097@163.com>
 // +----------------------------------------------------------------------
+
 namespace think\addons;
 
 use think\facade\Hook;

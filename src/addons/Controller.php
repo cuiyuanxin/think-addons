@@ -1,15 +1,18 @@
 <?php
+
 // +----------------------------------------------------------------------
-// | thinkphp5 Addons [ WE CAN DO IT JUST THINK IT ]
+// | cuicmf addons插件
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016 http://www.zzstudio.net All rights reserved.
+// | Copyright (c) 2018-2019F All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Byron Sampson <xiaobo.sun@qq.com>
+// | Author: 崔元欣 <15811506097@163.com>
 // +----------------------------------------------------------------------
+
 namespace think\addons;
 
+use think\Controller;
 use think\facade\Env;
 use think\facade\Request;
 use think\facade\Config;
@@ -21,8 +24,7 @@ use think\Container;
  * Class Controller
  * @package think\addons
  */
-class Controller extends \think\Controller
-{
+class Controller extends Controller {
     // 当前插件操作
     protected $addon = null;
     protected $controller = null;

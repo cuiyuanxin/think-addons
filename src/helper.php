@@ -1,12 +1,13 @@
 <?php
+
 // +----------------------------------------------------------------------
-// | thinkphp5 Addons [ WE CAN DO IT JUST THINK IT ]
+// | cuicmf addons插件
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016 http://www.zzstudio.net All rights reserved.
+// | Copyright (c) 2018-2019F All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Byron Sampson <xiaobo.sun@qq.com>
+// | Author: 崔元欣 <15811506097@163.com>
 // +----------------------------------------------------------------------
 
 use think\facade\App;
@@ -15,10 +16,12 @@ use think\facade\Config;
 use think\facade\Cache;
 use think\facade\Route;
 use think\Loader;
+use think\facade\Env;
 
 // 插件目录
 $appPath = App::getAppPath();
 $addons_path = dirname($appPath) . DIRECTORY_SEPARATOR . 'addons' . DIRECTORY_SEPARATOR;
+// 设置插件目录为环境变量
 Env::set('addons_path', $addons_path);
 // 定义路由
 Route::any('addons/execute/:addon-:control-:action', "\\think\\addons\\Route@execute");
@@ -29,54 +32,66 @@ if (!is_dir($addons_path)) {
 // 注册类的根命名空间
 Loader::addNamespace('addons', $addons_path);
 // 闭包自动识别插件目录配置
+//Hook::add('app_init', function () {
+//
+//    if (empty($config)) {
+//        // 读取插件钩子列表
+//        $hooks = Db::name('Hooks')->field('name,addons')->select();
+//        foreach ($hooks as $hook) {
+//            $config['hooks'][$hook['name']] = explode(',', $hook['addons']);
+//        }
+//        cache('addons', $config);
+//    }
+//    config('addons', $config);
+//});
+
 Hook::add('app_init', function () {
     // 获取开关
-    $autoload = (bool)Config::get('addons.autoload', false);
-    // 非正是返回
-    if (!$autoload) {
-        return;
-    }
+    $autoload = (bool)Config::get('addons.addons.autoload', false);
     // 当debug时不缓存配置
-    $config = App::isDebug() ? [] : cache('addons');
-    if (empty($config)) {
-        // 读取插件目录及钩子列表
-        $base = get_class_methods("\\think\\Addons");
-        // 读取插件目录中的php文件
-        foreach (glob(Env::get('addons_path') . '*/*.php') as $addons_file) {
-            // 格式化路径信息
-            $info = pathinfo($addons_file);
-            // 获取插件目录名
-            $name = pathinfo($info['dirname'], PATHINFO_FILENAME);
-            // 找到插件入口文件
-            if (strtolower($info['filename']) == strtolower($name)) {
-                // 读取出所有公共方法
-                $methods = (array)get_class_methods("\\addons\\" . $name . "\\" . $info['filename']);
-                // 跟插件基类方法做比对，得到差异结果
-                $hooks = array_diff($methods, $base);
-                // 循环将钩子方法写入配置中
-                foreach ($hooks as $hook) {
-                    if (!isset($config['hooks'][$hook])) {
-                        $config['hooks'][$hook] = [];
-                    }
-                    // 兼容手动配置项
-                    if (is_string($config['hooks'][$hook])) {
-                        $config['hooks'][$hook] = explode(',', $config['hooks'][$hook]);
-                    }
-                    if (!in_array($name, $config['hooks'][$hook])) {
-                        $config['hooks'][$hook][] = $name;
+    $config = App::isDebug() ? [] : Cache::get('addons', []);
+    
+    if($autoload) {
+        if(empty($config)) { // 开启插件
+            // 读取插件目录及钩子列表
+            $base = get_class_methods("\\think\\Addons");
+            // 读取插件目录中的php文件
+            foreach (glob(Env::get('addons_path') . '*/*.php') as $addons_file) {
+                // 格式化路径信息
+                $info = pathinfo($addons_file);
+                // 获取插件目录名
+                $name = pathinfo($info['dirname'], PATHINFO_FILENAME);
+                // 找到插件入口文件
+                if (strtolower($info['filename']) == strtolower($name)) {
+                    // 读取出所有公共方法
+                    $methods = (array)get_class_methods("\\addons\\" . $name . "\\" . $info['filename']);
+                    // 跟插件基类方法做比对，得到差异结果
+                    $hooks = array_diff($methods, $base);
+                    // 循环将钩子方法写入配置中
+                    foreach ($hooks as $hook) {
+                        if (!isset($config['hooks'][$hook])) {
+                            $config['hooks'][$hook] = [];
+                        }
+                        // 兼容手动配置项
+                        if (is_string($config['hooks'][$hook])) {
+                            $config['hooks'][$hook] = explode(',', $config['hooks'][$hook]);
+                        }
+                        if (!in_array($name, $config['hooks'][$hook])) {
+                            $config['hooks'][$hook][] = $name;
+                        }
                     }
                 }
             }
+            Cache::set('addons', $config);
         }
-        cache('addons', $config);
     }
-    config('addons', $config);
+    Config::set('addons', $config);
 });
 // 闭包初始化行为
 Hook::add('action_begin', function () {
     // 获取系统配置
     $data = App::isDebug() ? [] : Cache::get('hooks', []);
-    $config = config('addons');
+    $config = Config::get('addons');
     $addons = isset($config['hooks']) ? $config['hooks'] : [];
     if (empty($data)) {
         // 初始化钩子
@@ -89,7 +104,7 @@ Hook::add('action_begin', function () {
             $addons[$key] = array_filter(array_map('get_addon_class', $values));
             Hook::add($key, $addons[$key]);
         }
-        cache('hooks', $addons);
+        Cache::set('hooks', $addons);
     } else {
         Hook::import($data, false);
     }
@@ -159,7 +174,7 @@ function get_addon_config($name)
 function addon_url($url, $param = [], $suffix = true, $domain = false)
 {
     $url = parse_url($url);
-    $case = config('url_convert');
+    $case = Config::get('url_convert');
     $addons = $case ? Loader::parseName($url['scheme']) : $url['scheme'];
     $controller = $case ? Loader::parseName($url['host']) : $url['host'];
     $action = trim($case ? strtolower($url['path']) : $url['path'], '/');

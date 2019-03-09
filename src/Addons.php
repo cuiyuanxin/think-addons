@@ -1,20 +1,22 @@
 <?php
+
 // +----------------------------------------------------------------------
-// | thinkphp5 Addons [ WE CAN DO IT JUST THINK IT ]
+// | cuicmf addons插件
 // +----------------------------------------------------------------------
-// | Copyright (c) 2016 http://www.zzstudio.net All rights reserved.
+// | Copyright (c) 2018-2019F All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: Byron Sampson <xiaobo.sun@qq.com>
+// | Author: 崔元欣 <15811506097@163.com>
 // +----------------------------------------------------------------------
+
 namespace think;
+
+use think\facade\Env;
 
 /**
  * 插件基类
  * Class Addns
- * @author Byron Sampson <xiaobo.sun@qq.com>
- * @package think\addons
  */
 abstract class Addons
 {
@@ -28,16 +30,6 @@ abstract class Addons
     // 当前错误信息
     protected $error;
 
-    /**
-     * $info = [
-     *  'name'          => 'Test',
-     *  'title'         => '测试插件',
-     *  'description'   => '用于thinkphp5的插件扩展演示',
-     *  'status'        => 1,
-     *  'author'        => 'byron sampson',
-     *  'version'       => '0.1'
-     * ]
-     */
     public $info = [];
     public $addons_path = '';
     public $config_file = '';
@@ -49,7 +41,7 @@ abstract class Addons
     public function __construct()
     {
         // 获取当前插件目录
-        $this->addons_path = \think\facade\Env::get('addons_path') . $this->getName() . DIRECTORY_SEPARATOR;
+        $this->addons_path = Env::get('addons_path') . $this->getName() . DIRECTORY_SEPARATOR;
         // 读取当前插件配置信息
         if (is_file($this->addons_path . 'config.php')) {
             $this->config_file = $this->addons_path . 'config.php';
