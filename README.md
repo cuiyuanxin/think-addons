@@ -1,18 +1,17 @@
 # think-addons
-The ThinkPHP5.1 Addons Package
+The ThinkPHP 5.1 Addons Package
 
 ## 安装
 > composer require cuicmf/think-addons:dev-master
 
 ## 配置
-### 公共配置
-```
 在config目录中新建`addons.php`,内容为：
 ```
 <?php
 return [
     // 是否自动读取取插件钩子配置信息（默认是关闭）
     'autoload' => false
+    ]
 ]
 ```
 
@@ -45,7 +44,7 @@ class Test extends Addons	// 需继承think\addons\Addons类
     public $info = [
         'name' => 'test',	// 插件标识
         'title' => '插件测试',	// 插件名称
-        'description' => 'thinkph5插件测试',	// 插件简介
+        'description' => 'thinkph5.1插件测试',	// 插件简介
         'status' => 0,	// 状态
         'author' => 'byron sampson',
         'version' => '0.1'
@@ -119,14 +118,14 @@ test为插件名，Action为controller中的类名，link为controller中的方�
 ```
 
 ### 创建插件的controller文件
-> 在test目录中创建controller目录，在controller目录中创建Action.php文件
-> controller类的用法与tp5中的controller一致
+> 在test目录中创建controller目录，在controller目录中创建Index.php文件
+> controller类的用法与tp5.1中的controller一致
 
 ```
 <?php
 namespace addons\test\controller;
 
-class Action
+class Index
 {
     public function link()
     {
@@ -173,7 +172,7 @@ hook('testhook', ['id'=>1])
 ### 最终生成的目录结构为
 
 ```
-tp5.1
+tp5
  - addons
  -- test
  --- controller
@@ -190,5 +189,4 @@ tp5.1
  - extend
  - vendor
  - public
- - route
 ```
